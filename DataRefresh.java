@@ -42,7 +42,7 @@ public class DataRefresh {
 		return null;
 	}
 	
-	private String getRefreshDate(String volume, String dataObject) {
+	public String getRefreshDate(String volume, String dataObject) {
 		try {
 			CallableStatement cStmt = getConnection().prepareCall(getProperty("query"));
 			
