@@ -1,30 +1,27 @@
-package com.opentext.sample;
+package com.opentext.sample.code;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.sql.Statement;
 import java.util.Properties;
 
 import java.sql.CallableStatement;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 
 public class DataRefresh {
-	private static final String PROPERTIES_FILE = "database.properties";
+	private String properties_file = "database.properties";
 	
 	public DataRefresh() {
-		//System.out.println(getRefreshDate("volume0", "/Resources/myDataObject0.data"));
 	}
 	
 	private String getProperty(String key) {
 		Properties props = new Properties();
 		
 		try {
-			props.load(new FileInputStream(PROPERTIES_FILE));
+			props.load(new FileInputStream(properties_file));
 		}catch(IOException ex){
 			ex.printStackTrace();
 		}
@@ -34,8 +31,8 @@ public class DataRefresh {
 	
 	private Connection getConnection() {
 		try {
-			Class.forName(getProperty("driver"));
-			return DriverManager.getConnection(getProperty("connectionString"), getProperty("username"), getProperty("password"));
+			Class.forName("com.mysql.jdbc.Driver");
+			return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/datarefresh", "root", "password");
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -44,7 +41,7 @@ public class DataRefresh {
 	
 	public String getRefreshDate(String volume, String dataObject) {
 		try {
-			CallableStatement cStmt = getConnection().prepareCall(getProperty("query"));
+			CallableStatement cStmt = getConnection().prepareCall("{CALL getDataRefreshDate(?, ?)}");
 			
 			cStmt.setString(1, volume);
 			cStmt.setString(2, dataObject);
@@ -64,9 +61,11 @@ public class DataRefresh {
 		}
 	}
 	
-	/*
-	public static void main(String[] args) {
-		new DataRefresh();
-	}
-	*/
+	
+	
+	//public static void main(String[] args) {
+	//	System.out.println(new DataRefresh().getRefreshDate("volume0", "/Resources/myDataObject0.data"));
+	//}
+	
+	
 }
